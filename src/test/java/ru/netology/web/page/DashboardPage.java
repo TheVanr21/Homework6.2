@@ -9,8 +9,8 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class DashboardPage {
     private SelenideElement dashboardHeader = $("[data-test-id='dashboard']");
-    private static SelenideElement dashBoardMode = $("h1");
-    private static ElementsCollection cards = $$(".list__item div");
+    private SelenideElement dashBoardMode = $("h1");
+    private ElementsCollection cards = $$(".list__item div");
 
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
@@ -21,18 +21,10 @@ public class DashboardPage {
 
     public void isOpen() {
         dashboardHeader.shouldBe(Condition.visible);
-    }
-
-    public static void isDashboardMode() {
         dashBoardMode.shouldHave(Condition.text("Ваши карты"));
     }
 
-    public static void isTransferMode() {
-        dashBoardMode.shouldHave(Condition.text("Пополнение карты"));
-    }
-
-
-    public static SelenideElement getCardById(String id) {
+    private SelenideElement getCardById(String id) {
         return cards.find(Condition.attribute("data-test-id", id));
     }
 
@@ -45,7 +37,7 @@ public class DashboardPage {
     }
 
     public TransferPage transferTo(String toId) {
-        isDashboardMode();
+        isOpen();
         getCardById(toId).$("button").click();
         return new TransferPage();
     }
@@ -53,9 +45,4 @@ public class DashboardPage {
     public SelenideElement getCardOnPage(int number){
         return cards.get(number-1);
     }
-
-    public boolean isBalancePositive(String id) {
-        return getCardBalance(id) > 0;
-    }
-
 }

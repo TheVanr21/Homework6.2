@@ -39,20 +39,18 @@ public class TemplateSteps {
         dashboardPage.isOpen();
     }
 
-    @Пусть("пользователь залогинен под тестовым пользователем 1")
-    public void fullAuth() {
+    @Пусть("пользователь залогинен под тестовым пользователем с именем {string} и паролем {string}")
+    public void fullAuth(String login, String password) {
         loginPage = Selenide.open("http://localhost:9999/", LoginPage.class);
-        DataHelper.AuthInfo user = DataHelper.getAuthInfo();
-        String login = user.getLogin();
-        String password = user.getPassword();
-        String code = DataHelper.getVerificationCodeFor(user).getCode();
+        DataHelper.AuthInfo user = new DataHelper.AuthInfo(login, password);
+        String code = new DataHelper.VerificationCode("12345").getCode();
         verificationPage = loginPage.validLogin(login, password);
         dashboardPage = verificationPage.validVerify(code);
     }
 
     @Когда("пользователь переводит {int} рублей с карты с номером {string} на свою {int} карту с главной страницы")
     public void transfer(int amount, String cardNumber, int cardTo) {
-        String cardTwoId = DataHelper.getCardId(cardTo);
+        String cardTwoId = dashboardPage.getCardOnPage(cardTo).getAttribute("data-test-id");;
         dashboardPage
                 .transferTo(cardTwoId)
                 .sendTransferRound(cardNumber, amount * 100);
